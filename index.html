@@ -37,7 +37,7 @@
                 <button v-on:click="addToCart(product)" v-if="canAddToCart(product)">Add to Cart</button>
                 <button disabled="disabled"  v-else>Add to Cart</button>
 
-                <!--Checking the amount of items left and displaying messages accordingly-->
+                <!--Checking amount of items left and displaying messages accordingly-->
                 <span v-if="product.availableInventory === cartCount(product.id)">
                     Items Not Available!
                 </span>
