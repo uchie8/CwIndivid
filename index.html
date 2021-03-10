@@ -16,12 +16,14 @@
     <!-- Create the DOM space for vue to run in-->
     <div id="app" >
 
-       
+
+              
 
             <h2 v-text="sitename"></h2>
             <button @click="showCheckout">
                 {{ cartItemCount }}
-                <span class="fa fa-cart-plus"></span> shoppingcart </button>    
+                <span class="fa fa-cart-plus"></span> shoppingcart </button> 
+                <h3>sort lessons by: </h3>     
         </header>
         <main>
             <div v-if="showProduct" class="product">
@@ -33,7 +35,7 @@
                  <p>location:{{product.location}}</p>
                 <!-- The double curly brackets is the shorter version of v-text -->
                 <p>Price:{{product.price}} </p>
-                <p>space:{{product.space}}</p>
+                <p>space:{{product.availableInventory - cartCount(product.id)}}</p>
                 <button v-on:click="addToCart(product)" v-if="canAddToCart(product)">Add to Cart</button>
                 <button disabled="disabled"  v-else>Add to Cart</button>
 
@@ -52,9 +54,7 @@
 
             <!--Checkout-->
             <div v-else>
-                <form>
-                    <input type="button" value="Go back!" onclick="history.back()">
-                   </form>
+                
                 
                 <h2> Checkout</h2>
                 <p>
@@ -69,20 +69,20 @@
                     <input type="number" v-model.number="order.phone"/>
                 </p>
 
-                <button v-on:click ="navigateTo('cart')">view cart</button>
+                <button v-on:click ="navigateTo('cart1')">view cart</button>
 
-                <div v-if="page === 'cart'">
+                <div v-if="page === 'cart1'">
                     <h1>your cart</h1>
-                    <div v-for="product in cart">
+                    <div v-for="(product,index) in cart1">
                         <figure>
                             <img v-bind:src="product.image">
                         </figure>
-                        <h2 v-text ="product.subject"></h2>
-                        <p v-html="product.location"></p>
-                        <p>space:{{product.space}}</p>
+                        <h2>subject: {{product.subject}}</h2>
+                        <p>location: {{product.location}}</p>
+                        
                         <!-- The double curly brackets is the shorter version of v-text -->
                         <p>Price {{product.price}} </p>
-                        <button v-on:click="removeItemFromcart(product)" >remove from Cart</button>
+                        <button v-on:click="removeItemFromcart(index)" >remove from Cart</button>
                         
                 </div>
 
@@ -120,7 +120,8 @@
                
                
                 products: productArray,
-                cart: [] //array to store items in shopping cart
+                cart: [],
+                cart1: [] //array to store items in shopping cart
             },
             methods:{
                 //Add to cart function which will take the product id and store it in cart
@@ -128,6 +129,7 @@
                 
                     console.log('testing');
                     this.cart.push(product.id);
+                    this.cart1.push(product);
                 },
                 sortlowest() {
                     this.ratingsinfo.sort((a,b) => a.rating > b.rating ? 1 : -1);
@@ -141,8 +143,9 @@
             },
                 
 
-                removeItemFromcart(product){
-                    this.cart.splice(this.cart.indexof(product));
+                removeItemFromcart(index){
+                    Vue.delete(this.cart1, index);
+                   
 
                 },
                 navigateTo(page){
