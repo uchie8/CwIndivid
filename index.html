@@ -29,8 +29,8 @@
                 <figure>
                     <img v-bind:src="product.image">
                 </figure>
-                <h2 v-text ="product.subject"></h2>
-                <p v-html="product.location"></p>
+                 <h2>subject: {{product.subject}}</h2>
+                <p>location:{{product.location}}</p>
                 <!-- The double curly brackets is the shorter version of v-text -->
                 <p>Price:{{product.price}} </p>
                 <p>space:{{product.space}}</p>
