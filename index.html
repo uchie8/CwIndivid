@@ -59,7 +59,7 @@
                 <h2> Checkout</h2>
                 <p>
                     <strong>Name:</strong>
-                    <!--This input field is bound to 'firstName' in the 'order' object -->
+                    
                     <input type="text"  v-model.textonly="order.Name"/>
                 </p>
                
@@ -137,6 +137,9 @@
                     this.ratingsinfo.sort((a,b) => a.rating < b.rating ? 1 : -1);
 
                 },
+                addToCart2:(product)=> {
+               app.product.spaces = app.product.spaces-1
+            },
                 
 
                 removeItemFromcart(product){
