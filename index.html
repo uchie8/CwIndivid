@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Lessons APP</title>
+    <!-- Import Script to run Vue-->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <!--Importing the products list -->
+    <script src="lesson.js"></script>
+    <link rel="stylesheet" href="style.css"
+</head>
+
+<body>
+    <!-- Create the DOM space for vue to run in-->
+    <div id="app" >
+
+       
+
+            <h2 v-text="sitename"></h2>
+            <button @click="showCheckout">
+                {{ cartItemCount }}
+                <span class="fa fa-cart-plus"></span> Checkout </button>    
+        </header>
+        <main>
+            <div v-if="showProduct" class="product">
+                <div v-for="product in sortedProducts">
+                <figure>
+                    <img v-bind:src="product.image">
+                </figure>
+                <h2 v-text ="product.subject"></h2>
+                <p v-html="product.location"></p>
+                <!-- The double curly brackets is the shorter version of v-text -->
+                <p>Price:{{product.price}} </p>
+                <p>space:{{product.space}}</p>
+                <button v-on:click="addToCart(product)" v-if="canAddToCart(product)">Add to Cart</button>
+                <button disabled="disabled"  v-else>Add to Cart</button>
+
+                <!--Checking the amount of items left and displaying messages accordingly-->
+                <span v-if="product.availableInventory === cartCount(product.id)">
+                    Items Not Available!
+                </span>
+                <span v-else-if="product.availableInventory - cartCount(product.id) < 5">
+                    Only {{product.availableInventory - cartCount(product.id)}} left!
+                </span>
+                <span v-else>Buy now!</span>
+
+              
+                </div>
+            </div>
+
+            <!--Checkout-->
+            <div v-else>
+                <form>
+                    <input type="button" value="Go back!" onclick="history.back()">
+                   </form>
+                
+                <h2> Checkout</h2>
+                <p>
+                    <strong>Name:</strong>
+                    <!--This input field is bound to 'firstName' in the 'order' object -->
+                    <input type="text"  v-model.textonly="order.Name"/>
+                </p>
+               
+               
+                <p>
+                    <strong>phone:</strong>
+                    <input type="number" v-model.number="order.phone"/>
+                </p>
+
+                <button v-on:click ="navigateTo('cart')">view cart</button>
+
+                <div v-if="page === 'cart'">
+                    <h1>your cart</h1>
+                    <div v-for="product in cart">
+                        <figure>
+                            <img v-bind:src="product.image">
+                        </figure>
+                        <h2 v-text ="product.subject"></h2>
+                        <p v-html="product.location"></p>
+                        <p>space:{{product.space}}</p>
+                        <!-- The double curly brackets is the shorter version of v-text -->
+                        <p>Price {{product.price}} </p>
+                        <button v-on:click="removeItemFromcart(product)" >remove from Cart</button>
+                        
+                </div>
+
+              
+               
+                <!--DISPLAY OF ORDER-->
+                <h2>Order Information</h2>
+                <p>Name: {{order.Name}}</p>
+                <p>phone: {{order.phone}}</p>
+                
+                <button v-on:click="submitForm">Place Order</button>
+            </div>
+        </main>
+
+    </div>
+
+    <script>
+          
+    //Instatiate a Vue object and set some values to it
+        var webstore = new Vue({
+    // Link Vue to the Div with an id of app
+            el: '#app',
+            data: {
+       
+   
+                page:"products",
+                showProduct: true,
+                sitename: 'lessons app',
+                order:{
+                    Name: '',
+                    phone: '',
+                   
+                },
+      
+               
+                //products is the Vue Property
+                //productArray is the array of products in products.js
+                products: productArray,
+                cart: [] //array to store items in shopping cart
+            },
+            methods:{
+                //Add to cart function which will take the product id and store it in cart
+                addToCart: function(product){
+                //use of console.log to check that the function is fired correctly
+                    console.log('testing');
+                    this.cart.push(product.id);
+                },
+                sortlowest() {
+                    this.ratingsinfo.sort((a,b) => a.rating > b.rating ? 1 : -1);
+                },
+                sorthighest(){
+                    this.ratingsinfo.sort((a,b) => a.rating < b.rating ? 1 : -1);
+
+                },
+                
+
+                removeItemFromcart(product){
+                    this.cart.splice(this.cart.indexof(product));
+
+                },
+                navigateTo(page){
+                    this.page = page; 
+                },
+                // if the variable showProduct is true, make it false and vice-versa
+                showCheckout: function(){
+                    console.log(this.showProduct);
+                    this.showProduct = this.showProduct ? false : true;
+                },
+                //Method to submit the checkout form
+                submitForm() {
+                    alert('Your order has been submitted!')
+                },
+                  //Makes sure that there are enough items in the inventory.  If not we'll disable 
+                //the add to cart button.
+                canAddToCart: function(product){
+                    return product.availableInventory > this.cartCount(product.id);
+                },
+                cartCount(id){
+                    let count = 0;
+                    for (let i = 0; i < this.cart.length; i++){
+                        if (this.cart[i] === id){
+                            count++;
+                        }
+                    }
+                    return count;
+                },
+             
+            },
+            computed: {
+                //Sends the value of items in the cart array to the checkout button
+                cartItemCount: function(){
+                    return this.cart.length || '';
+                },
+                filteredfilms() {
+              let filter = new RegExp(this.filterText,"i")
+              return this.ratingsinfo.filter(el=> el.title.match(filter))
+          },
+                sortedProducts(){
+                    //the comparison that defines the order
+                    function compare (a, b){
+                        if (a.price > b.price) return 1;
+                        if (a.price < b.price) return -1;
+                        return 0;
+                    }
+                    //sort 'productArray' array and return it
+                    return this.products.sort(compare);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
