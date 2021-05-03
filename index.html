@@ -17,13 +17,12 @@
     <div id="app" >
 
 
-              
-
             <h2 v-text="sitename"></h2>
             <button @click="showCheckout">
                 {{ cartItemCount }}
-                <span class="fa fa-cart-plus"></span> shoppingcart </button> 
-                <h3>sort lessons by: </h3>     
+                <span class="fa fa-cart-plus"></span> shoppingcart </button>
+             
+                
         </header>
         <main>
             <div v-if="showProduct" class="product">
@@ -114,15 +113,32 @@
                 order:{
                     Name: '',
                     phone: '',
+
                    
                 },
       
                
                
-                products: productArray,
+                products: [],
                 cart: [],
                 cart1: [] //array to store items in shopping cart
             },
+           
+
+
+
+            created: function() {
+                fetch('https://backend-server2.herokuapp.com/collection/products').then(
+                function (response) {
+                    console.log("hello");
+                    
+                response.json().then(
+                function (json) {
+                webstore.products = json;
+                })
+            })
+        },
+                
             methods:{
                 //Add to cart function which will take the product id and store it in cart
                 addToCart: function(product){
@@ -195,7 +211,37 @@
                     //sort 'productArray' array and return it
                     return this.products.sort(compare);
                 }
-            }
+            },
+            filteredItems: function () {
+                    const sort = this.filter.sort;
+                    const order = this.filter.direction;
+
+                    const sortString = function (a, b, property, order) {
+                        var nameA = a[property].toUpperCase();
+                        var nameB = b[property].toUpperCase();
+
+                        if (nameA < nameB) {
+                            return order == "asc" ? -1 : 1;
+                        }
+                        if (nameA > nameB) {
+                            return order == "asc" ? 1 : -1;
+                        }
+
+                        return 0;
+                    }
+                    console.log(sort, order);
+                    if (sort == "none" && order == "none") {
+                        return this.products;
+                    }
+
+                    return this.products.sort(function (lessonA, lessonB) {
+                        if (["subject", "location"].includes(sort)) {
+                            return sortString(lessonA, lessonB, sort, order);
+                        }
+
+                        return order == "des" ? lessonB[sort] - lessonA[sort] : lessonA[sort] - lessonB[sort];
+                    });
+                },
         });
     </script>
 </body>

@@ -1,4 +1,4 @@
-let productArray = [
+ productArray = [
     {
         id:01,
         subject: "social studies",
