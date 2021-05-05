@@ -67,10 +67,10 @@
                     <strong>phone:</strong>
                     <input type="number" v-model.number="order.phone"/>
                 </p>
+<!-- 
+                <button v-on:click ="navigateTo('cart1', cart1)">view cart</button> -->
 
-                <!-- <button v-on:click ="navigateTo('cart1')">view cart</button> -->
-
-                <div v-if="page === 'cart1'">
+                <div v-if= true>
                     <h1>your cart</h1>
                     <div v-for="(product,index) in cart1">
                         <figure>
@@ -92,7 +92,7 @@
                 <p>Name: {{order.Name}}</p>
                 <p>phone: {{order.phone}}</p>
                 
-                <button v-on:click="submitForm">Place Order</button>
+                <button v-on:click="placeOrder(cart1, order); put();" >Place Order</button>
             </div>
         </main>
 
@@ -145,6 +145,8 @@
                 
                     console.log('testing');
                     this.cart.push(product.id);
+                    index = webstore.products.findIndex( (element) => element.id ==product.id);
+                    webstore.products[index].space -=1;
                     this.cart1.push(product);
                 },
                 sortlowest() {
@@ -155,7 +157,63 @@
 
                 },
                 addToCart2:(product)=> {
-               app.product.spaces = app.product.spaces-1
+               app.product.spaces = app.product.spaces-1;
+            },
+            placeOrder(cart1, order){
+                const lessonIDArray = [];
+                const spaceMap = new Map();
+                
+
+                for (product in cart1) {
+                    console.log(cart1[product]);
+                    
+                    lessonIDArray.push(cart1[product].id);
+                }
+                let countFunc = keys => {
+                spaceMap[keys] = ++spaceMap[keys] || 1;
+                }
+
+                lessonIDArray.forEach(countFunc);
+
+                const newOrder = {name: order.Name, phone_number:order.phone, lessonIDArray, No_of_space:spaceMap };
+                fetch('https://backend-server2.herokuapp.com/collection/order'
+                            , {
+                            method: 'POST'
+                            , // set the HTTP method as 'POST'
+                            headers: {
+                            'Content-Type': 'application/json'
+                            , // set the data type as JSON
+                            },
+                            body: JSON.stringify(newOrder), // need to stringify the JSON object
+                            })
+                            .then(response => response.json())
+                            .then(responseJSON => {
+                            console.log('Success:'
+                            , responseJSON);
+                            });
+                            alert("your order has been sent")
+
+            },
+            put(){
+                console.log("webs");
+                console.log(webstore.products);
+                fetch('https://backend-server2.herokuapp.com/collection/products/id'
+                            , {
+                            method: 'PUT'
+                            , // set the HTTP method as 'put'
+                            headers: {
+                            'Content-Type': 'application/json'
+                            , // set the data type as JSON
+                            },
+                            body: JSON.stringify(webstore.products), // need to stringify the JSON object
+                            })
+                            .then(response => response.json())
+                            .then(responseJSON => {
+                            console.log('Success:'
+                            , responseJSON);
+                            });
+
+
             },
                 
 
@@ -164,7 +222,8 @@
                    
 
                 },
-                navigateTo(page){
+                navigateTo(page, cart){
+                    console.log(cart);
                     this.page = page; 
                 },
                 // if the variable showProduct is true, make it false and vice-versa
