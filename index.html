@@ -92,7 +92,7 @@
                 <p>Name: {{order.Name}}</p>
                 <p>phone: {{order.phone}}</p>
                 
-                <button v-on:click="placeOrder(cart1, order); put();" >Place Order</button>
+                <button v-on:click="put; placeOrder(cart1, order); " >Place Order</button>
             </div>
         </main>
 
@@ -197,7 +197,7 @@
             put(){
                 console.log("webs");
                 console.log(webstore.products);
-                fetch('https://backend-server2.herokuapp.com/collection/products/id'
+                fetch("https://backend-server2.herokuapp.com/collection/_id"
                             , {
                             method: 'PUT'
                             , // set the HTTP method as 'put'
@@ -209,7 +209,7 @@
                             })
                             .then(response => response.json())
                             .then(responseJSON => {
-                            console.log('Success:'
+                            console.log('Success: done'
                             , responseJSON);
                             });
 
